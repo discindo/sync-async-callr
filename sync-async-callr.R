@@ -64,7 +64,7 @@ background_srv <-
       } else {
         x <- "Async job in background completed"
       }
-      x
+      return(x)
     })
     
     output$did_it_work <- renderText({

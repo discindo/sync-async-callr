@@ -47,7 +47,7 @@ background_ui <- function(id) {
 }
 
 background_srv <-
-  function(input, output, session, conn_string, df) {
+  function(input, output, session) {
     long_run <- eventReactive(input$start, {
       x <- r_bg(
         func = long_job,

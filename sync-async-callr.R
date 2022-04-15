@@ -3,7 +3,7 @@ library(callr)
 
 # functions
 
-long_job <- function() { 
+long_job <- function() {
   Sys.sleep(10)
   return(TRUE)
 }
@@ -27,7 +27,7 @@ sync_srv <- function(input, output, session) {
     long_job()
     return("Sync job completed")
   })
-  
+
   output$did_it_work <- renderText({
     long_run()
   })
@@ -55,18 +55,18 @@ background_srv <-
       )
       return(x)
     })
-    
+
     check <- reactive({
-      invalidateLater(millis = 1000, session = session)
-      
       if (long_run()$is_alive()) {
+        invalidateLater(millis = 1000, session = session)
+
         x <- "Job running in background"
       } else {
         x <- "Async job in background completed"
       }
       return(x)
     })
-    
+
     output$did_it_work <- renderText({
       check()
     })
@@ -75,11 +75,11 @@ background_srv <-
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  
+
   # Application title
   titlePanel("Old Faithful Geyser Data"),
-  
-  # Sidebar with a slider input for number of bins 
+
+  # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
       sliderInput("bins",
@@ -92,7 +92,7 @@ ui <- fluidPage(
       tags$hr(),
       background_ui("bg")
     ),
-    
+
     # Show a plot of the generated distribution
     mainPanel(
       plotOutput("distPlot")
@@ -102,19 +102,19 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
+
   output$distPlot <- renderPlot({
     # generate bins based on input$bins from ui.R
     x    <- faithful[, 2]
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
+
     # draw the histogram with the specified number of bins
     hist(x, breaks = bins, col = 'darkgray', border = 'white')
   })
-  
+
   callModule(sync_srv, id = "sync")
   callModule(background_srv, id = "bg")
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
